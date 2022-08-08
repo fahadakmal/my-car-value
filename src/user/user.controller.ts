@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,7 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { Serialize } from 'src/intercepters/serialize.intercepter';
+// import { Serialize } from 'src/intercepters/serialize.intercepter';å
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/updateUser.dto';
@@ -17,7 +18,7 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
-@Serialize(UserDto)
+// @Serialize(UserDto)å
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -36,7 +37,11 @@ export class UserController {
 
   @Get('/:id')
   findUser(@Param('id') id: string) {
-    return this.userService.findOne(parseInt(id));
+    const user = this.userService.findOne(parseInt(id));
+    if (!user) {
+      throw new BadRequestException('User nor found');
+    }
+    return user;
   }
 
   @Get()
